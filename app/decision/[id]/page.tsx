@@ -1,11 +1,33 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
 export default function DecisionPage() {
   const params = useParams();
   const id = params.id;
+
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function approve() {
+    setMessage("✅ Decision approved successfully.");
+  }
+
+  function reject() {
+    setMessage("❌ Decision rejected.");
+  }
+
+  function retry() {
+    setLoading(true);
+    setMessage("");
+
+    setTimeout(() => {
+      setLoading(false);
+      setMessage("🔄 Agent re-evaluated successfully.");
+    }, 1500);
+  }
 
   return (
     <main className="min-h-screen bg-white p-10 text-black">
@@ -20,45 +42,46 @@ export default function DecisionPage() {
 
         <div className="space-y-6">
 
-          <div className="border rounded-xl p-6 shadow-sm">
+          <div className="border rounded-xl p-6">
             <h2 className="font-bold text-lg mb-2">🧠 Agent Reasoning</h2>
             <p>
-              User intent appears to be a refund request, but confidence is low due
-              to ambiguous language.
+              User intent appears to be refund related but confidence is low.
             </p>
           </div>
 
-          <div className="border rounded-xl p-6 shadow-sm">
-            <h2 className="font-bold text-lg mb-2">📚 Retrieved Context</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Refund policy allows returns within 14 days.</li>
-              <li>User purchased item 10 days ago.</li>
-            </ul>
-          </div>
-
-          <div className="border rounded-xl p-6 shadow-sm">
-            <h2 className="font-bold text-lg mb-2">⚙️ Proposed Action</h2>
-            <p>Send refund approval email and notify finance workflow.</p>
-          </div>
-
-          <div className="border rounded-xl p-6 shadow-sm">
+          <div className="border rounded-xl p-6">
             <h2 className="font-bold text-lg mb-2">📊 Confidence Score</h2>
             <p className="text-red-700 font-bold text-xl">48%</p>
           </div>
 
-          <div className="flex gap-4 pt-4">
-            <button className="bg-green-600 text-white px-5 py-2 rounded-lg">
+          <div className="flex gap-4 pt-2">
+            <button
+              onClick={approve}
+              className="bg-green-600 text-white px-5 py-2 rounded-lg"
+            >
               Approve
             </button>
 
-            <button className="bg-red-600 text-white px-5 py-2 rounded-lg">
+            <button
+              onClick={reject}
+              className="bg-red-600 text-white px-5 py-2 rounded-lg"
+            >
               Reject
             </button>
 
-            <button className="bg-blue-600 text-white px-5 py-2 rounded-lg">
-              Retry
+            <button
+              onClick={retry}
+              className="bg-blue-600 text-white px-5 py-2 rounded-lg"
+            >
+              {loading ? "Retrying..." : "Retry"}
             </button>
           </div>
+
+          {message && (
+            <div className="mt-4 border rounded-lg p-4 bg-gray-50">
+              {message}
+            </div>
+          )}
 
         </div>
       </div>
