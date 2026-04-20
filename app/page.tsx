@@ -1,49 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const decisions = [
-  {
-    id: "A101",
-    type: "Customer Support",
-    confidence: 92,
-    status: "Auto Approved",
-  },
-  {
-    id: "A102",
-    type: "Hiring Review",
-    confidence: 58,
-    status: "Pending Review",
-  },
-  {
-    id: "A103",
-    type: "Sales Lead",
-    confidence: 44,
-    status: "Needs Approval",
-  },
-];
+type Decision = {
+  id: string;
+  type: string;
+  confidence: number;
+  status: string;
+};
 
 function confidenceColor(score: number) {
-  if (score >= 80) return "text-green-600";
-  if (score >= 60) return "text-yellow-600";
-  return "text-red-600";
+  if (score >= 80) return "text-green-700";
+  if (score >= 60) return "text-yellow-700";
+  return "text-red-700";
 }
 
 export default function HomePage() {
+  const [data, setData] = useState<Decision[]>([]);
+
+  useEffect(() => {
+    fetch("/api/decisions")
+      .then((res) => res.json())
+      .then((json) => setData(json));
+  }, []);
+
   return (
-    <main className="min-h-screen bg-gray-50 p-10">
+    <main className="min-h-screen bg-white p-10 text-black">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">
           AI Decision Queue
         </h1>
 
-        <p className="text-gray-500 mb-8">
+        <p className="text-gray-700 mb-8">
           Human-in-the-Loop approvals for AI workflow decisions
         </p>
 
-        <div className="bg-white rounded-2xl shadow border overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-300 overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-100 text-left">
+            <thead className="bg-gray-200 text-left">
               <tr>
                 <th className="p-4">ID</th>
                 <th className="p-4">Type</th>
@@ -54,14 +49,13 @@ export default function HomePage() {
             </thead>
 
             <tbody>
-              {decisions.map((item) => (
-                <tr key={item.id} className="border-t">
-                  <td className="p-4 font-medium">{item.id}</td>
-
+              {data.map((item) => (
+                <tr key={item.id} className="border-t border-gray-300">
+                  <td className="p-4">{item.id}</td>
                   <td className="p-4">{item.type}</td>
 
                   <td
-                    className={`p-4 font-semibold ${confidenceColor(
+                    className={`p-4 font-bold ${confidenceColor(
                       item.confidence
                     )}`}
                   >
@@ -73,7 +67,7 @@ export default function HomePage() {
                   <td className="p-4">
                     <Link
                       href={`/decision/${item.id}`}
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-700 hover:underline"
                     >
                       Review →
                     </Link>
@@ -81,6 +75,7 @@ export default function HomePage() {
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       </div>
