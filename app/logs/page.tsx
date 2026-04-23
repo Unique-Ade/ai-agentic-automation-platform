@@ -1,27 +1,15 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function LogsPage() {
-  const logs = [
-    {
-      id: "A101",
-      time: "2026-04-20 10:30",
-      action: "Refund Approved",
-      status: "Success",
-      override: "Yes",
-    },
-    {
-      id: "A102",
-      time: "2026-04-20 11:10",
-      action: "Candidate Rejected",
-      status: "Success",
-      override: "No",
-    },
-    {
-      id: "A103",
-      time: "2026-04-20 11:42",
-      action: "Lead Re-routed",
-      status: "Pending",
-      override: "Yes",
-    },
-  ];
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/decision/action")
+      .then((res) => res.json())
+      .then((data) => setLogs(data));
+  }, []);
 
   return (
     <main className="min-h-screen bg-white p-10 text-black">
