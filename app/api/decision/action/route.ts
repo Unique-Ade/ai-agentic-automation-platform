@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { decisions } from "../../decisions/route";
+import { decisions, logs } from "@/app/lib/store";
+// import { decisions } from "../../decisions/route";
 
 type Log = {
    id: string;
@@ -9,7 +10,7 @@ type Log = {
    override: string;
 };
 
-let logs : Log[] = [];
+// let logs : Log[] = [];
 
 export async function POST(req: Request) {
   const body = await req.json();
