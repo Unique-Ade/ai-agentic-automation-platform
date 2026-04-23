@@ -4,28 +4,56 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function HomePage() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
 
-  function loadData() {
+  useEffect(() => {
     fetch("/api/decisions")
       .then((res) => res.json())
       .then((json) => setData(json));
-  }
-
-  useEffect(() => {
-    loadData();
-
-    const interval = setInterval(loadData, 2000);
-
-    return () => clearInterval(interval);
   }, []);
+
+  const filtered = data.filter((item) => {
+    const matchesSearch =
+      item.id.toLowerCase().includes(search.toLowerCase()) ||
+      item.type.toLowerCase().includes(search.toLowerCase());
+
+    const matchesFilter =
+      filter === "All" ? true : item.status === filter;
+
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <main className="min-h-screen bg-white p-10 text-black">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">
+
+        <h1 className="text-3xl font-bold mb-6">
           AI Decision Queue
         </h1>
+
+        <div className="flex gap-4 mb-6">
+          <input
+            type="text"
+            placeholder="Search ID or Type..."
+            className="border p-3 rounded-lg w-full"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <select
+            className="border p-3 rounded-lg"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option>All</option>
+            <option>Pending Review</option>
+            <option>Approved</option>
+            <option>Rejected</option>
+            <option>Reprocessing</option>
+          </select>
+        </div>
 
         <div className="border rounded-2xl overflow-hidden">
           <table className="w-full">
@@ -40,7 +68,7 @@ export default function HomePage() {
             </thead>
 
             <tbody>
-              {data.map((item: any, index) => (
+              {filtered.map((item, index) => (
                 <tr key={index} className="border-t">
                   <td className="p-4">{item.id}</td>
                   <td className="p-4">{item.type}</td>
@@ -57,12 +85,83 @@ export default function HomePage() {
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       </div>
     </main>
   );
 }
+
+
+
+
+
+// "use client";
+
+// import { useEffect, useState } from "react";
+// import Link from "next/link";
+
+// export default function HomePage() {
+//   const [data, setData] = useState([]);
+
+//   function loadData() {
+//     fetch("/api/decisions")
+//       .then((res) => res.json())
+//       .then((json) => setData(json));
+//   }
+
+//   useEffect(() => {
+//     loadData();
+
+//     const interval = setInterval(loadData, 2000);
+
+//     return () => clearInterval(interval);
+//   }, []);
+
+//   return (
+//     <main className="min-h-screen bg-white p-10 text-black">
+//       <div className="max-w-6xl mx-auto">
+//         <h1 className="text-3xl font-bold mb-8">
+//           AI Decision Queue
+//         </h1>
+
+//         <div className="border rounded-2xl overflow-hidden">
+//           <table className="w-full">
+//             <thead className="bg-gray-200 text-left">
+//               <tr>
+//                 <th className="p-4">ID</th>
+//                 <th className="p-4">Type</th>
+//                 <th className="p-4">Confidence</th>
+//                 <th className="p-4">Status</th>
+//                 <th className="p-4">Action</th>
+//               </tr>
+//             </thead>
+
+//             <tbody>
+//               {data.map((item: any, index) => (
+//                 <tr key={index} className="border-t">
+//                   <td className="p-4">{item.id}</td>
+//                   <td className="p-4">{item.type}</td>
+//                   <td className="p-4">{item.confidence}%</td>
+//                   <td className="p-4">{item.status}</td>
+//                   <td className="p-4">
+//                     <Link
+//                       href={`/decision/${item.id}`}
+//                       className="text-blue-700 hover:underline"
+//                     >
+//                       Review →
+//                     </Link>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       </div>
+//     </main>
+//   );
+// }
 
 
 
