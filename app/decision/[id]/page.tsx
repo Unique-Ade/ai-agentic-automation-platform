@@ -12,22 +12,49 @@ export default function DecisionPage() {
   const [loading, setLoading] = useState(false);
 
   async function runAction(action: string) {
+  try {
     setLoading(true);
     setMessage("");
+
+    const decisionId = Array.isArray(id) ? id[0] : id;
 
     const res = await fetch("/api/decision/action", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id, action }),
+      body: JSON.stringify({
+        id: decisionId,
+        action,
+      }),
     });
 
     const data = await res.json();
 
-    setMessage(data.message);
+    setMessage(data.message || "Completed.");
+  } catch (error) {
+    setMessage("Request failed.");
+  } finally {
     setLoading(false);
   }
+}
+  // async function runAction(action: string) {
+  //   setLoading(true);
+  //   setMessage("");
+
+  //   const res = await fetch("/api/decision/action", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ id, action }),
+  //   });
+
+  //   const data = await res.json();
+
+  //   setMessage(data.message);
+  //   setLoading(false);
+  // }
 
   return (
     <main className="min-h-screen bg-white p-10 text-black">
